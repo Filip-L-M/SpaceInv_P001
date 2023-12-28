@@ -6,7 +6,7 @@ canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
 class Player {
-    constructor(xPosition, yPosition) {
+    constructor() {
         this.velocity = {
         x: 0,
         y: 0
@@ -21,16 +21,20 @@ class Player {
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
-  //          this.position = {
-   //             x: canvas.width / 2 - this.width / 2,
-   //             y: canvas.height - this.height - 20
-//        }
             this.position = {
-                x: xPosition,
-                y: yPosition
-            }
+               x: canvas.width / 2 - this.width / 2,
+                y: canvas.height - this.height - 20
+        }
+    
     }
 }
+
+    changePosition(xPosition, yPosition) {
+        this.position = {
+            x: xPosition,
+            y: yPosition
+        }
+    }
 
     draw() {
         // c.fillStyle = 'red'
@@ -207,8 +211,7 @@ class Grid{
 }
 
 const projectiles = []
-const player = new Player(300, 500)
-
+const player = new Player()
 let randomInterval = Math.floor(Math.random() * 500 + 500)
 let frames = 0
 let wait = false
