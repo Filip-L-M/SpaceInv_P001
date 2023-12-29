@@ -80,6 +80,7 @@ class Projectile {
     this.velocity = velocity;
 
     this.radius = 4.5;
+    playerShoot.play();
   }
 
   draw() {
@@ -139,7 +140,7 @@ class InvaderProjectile {
   }
 
   draw() {
-    c.fillStyle = "pink";
+    c.fillStyle = "yellow";
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 
@@ -223,8 +224,8 @@ class Grid {
     };
 
     this.invaders = [];
-    const columns = Math.floor(Math.random() * 6 + 5);
-    const rows = Math.floor(Math.random() * 3 + 2);
+    const columns = Math.floor(Math.random() * 8 + 5);
+    const rows = Math.floor(Math.random() * 4 + 2);
 
     this.width = columns * 25;
 
@@ -259,6 +260,25 @@ const projectiles = [];
 const player = new Player();
 const grids = [];
 const particles = [];
+let enemyExpolode = new Audio("audio/explode.wav");
+enemyExpolode.volume = 0.03;
+document.body.appendChild(enemyExpolode);
+
+let playerShoot = new Audio("audio/shoot.wav");
+playerShoot.volume = 0.05;
+document.body.appendChild(playerShoot);
+
+let enemyShoot = new Audio("audio/enemyShoot.wav");
+enemyShoot.volume = 0.1;
+document.body.appendChild(enemyShoot);
+
+let backgroundSound = new Audio("audio/backgroundMusic.wav");
+backgroundSound.volume = 0.01;
+document.body.appendChild(backgroundSound);
+
+let loseSound = new Audio("audio/gameOver.mp3");
+loseSound.volume = 0.3;
+document.body.appendChild(loseSound);
 
 let randomInterval = Math.floor(Math.random() * 500 + 500);
 let frames = 0;
@@ -334,11 +354,13 @@ function createParticles({ object, color, radius, fades }) {
 
 function animate() {
   if (!game.active) return;
+
   requestAnimationFrame(animate);
   c.fillStyle = "black";
   c.fillRect(0, 0, canvas.width, canvas.height);
-
+  backgroundSound.play();
   player.update();
+
   particles.forEach((particle, i) => {
     if (particle.position.y - particle.radius >= canvas.height) {
       particle.position.x = Math.random() * canvas.width;
@@ -373,6 +395,8 @@ function animate() {
         player.position.x &&
       invaderProjectile.position.x <= player.position.x + player.width
     ) {
+      loseSound.play();
+      loseSound.muted = false;
       setTimeout(() => {
         invaderProjectiles.splice(index, 1);
         player.opacity = 0;
@@ -382,6 +406,7 @@ function animate() {
         game.active = false;
       }, 2000);
       console.log("you lose");
+
       createParticles({
         object: player,
         color: "gray",
@@ -409,6 +434,7 @@ function animate() {
       grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(
         invaderProjectiles
       );
+      enemyShoot.play();
     }
 
     grid.invaders.forEach((invader, i) => {
@@ -433,6 +459,7 @@ function animate() {
             );
             // remove enemy&projectile
             if (invaderFound && projectileFound) {
+              enemyExpolode.play();
               score += 100;
               scoreL.innerHTML = score;
               createParticles({
